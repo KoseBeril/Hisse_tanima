@@ -6,6 +6,9 @@
 # ----------------------------------------------------------
 # Normalize
 # ----------------------------------------------------------
+import volume
+
+
 def normalize(score, max_score):
     if max_score == 0:
         return 0
@@ -30,29 +33,35 @@ def ai_classification(score):
 # ----------------------------------------------------------
 # AI SCORE (DİNAMİK MOD DESTEKLİ)
 # ----------------------------------------------------------
-def calculate_ai_score(trend, dip, volume, mode="pullback"):
+def calculate_ai_score(trend, dip, volume, fibonacci, mode="pullback"):
     # Normalize
     trend_score = normalize(trend["score"], trend["max_score"])
     dip_score = normalize(dip["score"], dip["max_score"])
     volume_score = normalize(volume["score"], volume["max_score"])
 
+    fibonacci_score = float(fibonacci) # Eğer direkt ham puan (0-100 arası) dönüyorsa
+
     # ------------------------------------------------------
     # Ağırlıklar (Moda Göre Dinamik Değişiyor)
     # ------------------------------------------------------
     if mode == "pullback":
+        # Pullback modunda toplam etki = 1.00 olacak şekilde dengelendi
         trend_weight = 0.40
+        dip_weight = 0.20
+        volume_weight = 0.30
+        fibonacci_weight = 0.10
+    else:  # mode == "dip"
+        # Senin belirttiğin Dip Modu ağırlıkları (Toplam: 1.00)
+        trend_weight = 0.20
         dip_weight = 0.35
-        volume_weight = 0.25
-    elif mode == "dip":
-        trend_weight = 0.10     # Erken dipte ana trend yönü zayıftır, etkisi azaltıldı
-        dip_weight = 0.65       # Dip puanı başrolü üstlendi
-        volume_weight = 0.30    # Hacim akümülasyonu sabit korundu
-
+        volume_weight = 0.20
+        fibonacci_weight = 0.25
     # AI SCORE Hesapla
     total = (
         trend_score * trend_weight +
         dip_score * dip_weight +
-        volume_score * volume_weight
+        volume_score * volume_weight +
+        fibonacci_score * fibonacci_weight
     )
     total = round(total, 2)
 
@@ -62,17 +71,20 @@ def calculate_ai_score(trend, dip, volume, mode="pullback"):
         "normalized": {
             "Trend": trend_score,
             "Dip": dip_score,
-            "Volume": volume_score
+            "Volume": volume_score,
+            "Fibonacci": fibonacci_score
         },
         "weights": {
             "Trend": trend_weight,
             "Dip": dip_weight,
-            "Volume": volume_weight
+            "Volume": volume_weight,
+            "Fibonacci": fibonacci_weight
         },
         "layers": {
             "Trend": trend_score,
             "Dip": dip_score,
-            "Volume": volume_score
+            "Volume": volume_score,
+            "Fibonacci": fibonacci_score
         }
     }
 

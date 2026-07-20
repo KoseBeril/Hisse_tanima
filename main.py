@@ -9,6 +9,7 @@ from trend import analyze_trend
 from dip import analyze_dip
 from volume import analyze_volume
 from ai_score import calculate_ai_score
+from fibonacci import calculate_fibonacci_dip_score
 import pandas as pd
 
 
@@ -66,9 +67,10 @@ for _, row in symbols.iterrows():
         trend = analyze_trend(df, mode=TARAMA_MODU)
         dip = analyze_dip(df, mode=TARAMA_MODU) 
         volume = analyze_volume(df, mode=TARAMA_MODU)
+        fibonacci_score, fibonacci_status = calculate_fibonacci_dip_score(df)
 
         # AI Score (Mod Ağırlıklarıyla)
-        ai = calculate_ai_score(trend, dip, volume, mode=TARAMA_MODU)
+        ai = calculate_ai_score(trend, dip, volume, fibonacci_score, mode=TARAMA_MODU)
 
         # Ekran Çıktısı
         print(
@@ -86,6 +88,9 @@ for _, row in symbols.iterrows():
         print(
             f"AI    : {ai['score']}  --> {ai['signal']}"
         )
+        print(
+            f"Fibonacci: {fibonacci_score}  --> {fibonacci_status}"
+        )
 
         # Sonuç Listesi
         results.append({
@@ -93,6 +98,7 @@ for _, row in symbols.iterrows():
             "Trend": trend["score"],
             "Dip": dip["score"],
             "Volume": volume["score"],
+            "fibonacci": fibonacci_score,
             "Trend100": ai["normalized"]["Trend"],
             "Dip100": ai["normalized"]["Dip"],
             "Volume100": ai["normalized"]["Volume"],
@@ -100,7 +106,8 @@ for _, row in symbols.iterrows():
             "Sinyal": ai["signal"],
             "Trend Durumu": trend["trend"],
             "Dip Durumu": dip["class"],
-            "Volume Durumu": volume["class"]
+            "Volume Durumu": volume["class"],
+            "fibonacci Durumu": fibonacci_status
         })
 
     except Exception as e:

@@ -234,8 +234,28 @@ def calculate_indicators(df):
         df["PPO_SIGNAL"] = ppo.iloc[:, 1]
     else:
         df["PPO"] = df["PPO_SIGNAL"] = np.nan
+    
+    # =====================================================
+    # 19) FIBONACCI LEVELS (DİNAMİK PENCERE ENTEGRASYONU)
+    # =====================================================
+    # Config dosyasından veya varsayılan 100 barlık pencereyi alıyoruz
+    fib_window = FIB_LOOKBACK if 'FIB_LOOKBACK' in globals() else 100
+    
+    # Son penceredeki en yüksek ve en düşük fiyatları yuvarlanan (rolling) pencere ile hesapla
+    # Bu sayede her satır (bar) için geriye dönük fib seviyeleri oluşur
+    df["FIB_HIGH"] = df["high"].rolling(window=fib_window).max()
+    df["FIB_LOW"] = df["low"].rolling(window=fib_window).min()
+    
+    # Fiyat farkı
+    df["FIB_DIFF"] = df["FIB_HIGH"] - df["FIB_LOW"]
+    
+    # İlgili Fibonacci geri çekilme seviyelerinin fiyat karşılıkları
+    df["FIB_236"] = df["FIB_HIGH"] - (df["FIB_DIFF"] * 0.764)
+    df["FIB_382"] = df["FIB_HIGH"] - (df["FIB_DIFF"] * 0.618)
+    df["FIB_618"] = df["FIB_HIGH"] - (df["FIB_DIFF"] * 0.382)
+    df["FIB_786"] = df["FIB_HIGH"] - (df["FIB_DIFF"] * 0.214)
 
     return df
-
+    
 if __name__ == "__main__":
     print("Genişletilmiş İndikatör Motoru Tamamlandı.")

@@ -9,7 +9,8 @@ from tvDatafeed import Interval
 # GENEL
 # ----------------------------------------------------------
 
-TIMEFRAME = Interval.in_daily 
+TIMEFRAME = Interval.in_daily    # indikatörler ile analizi ise saatlik olarak yapıyoruz.
+#TIMEFRAME = '1h'
 BARS = 300
 SEARCH_BARS = 120
 
@@ -69,3 +70,8 @@ RVOL_LIMIT = 1.20
 VOL_MA = 20
 DIP_LOOKBACK = 80
 RSI_DIP = 32
+
+# ----------------------------------------------------------
+# FIBONACCI
+# ----------------------------------------------------------
+FIB_LOOKBACK = 100  # Fibonacci tepe/dip analizi için geriye dönük mum sayısı

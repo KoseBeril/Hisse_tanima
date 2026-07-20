@@ -23,7 +23,7 @@ def get_bist_symbols():
     rows, df = (
         Query()
         .set_markets("turkey")
-        .set_property("interval", "1D")
+        .set_property("interval", "1D") # Hisse elemesini günlükte yapıyoruz
         .select(
 
             "name",
